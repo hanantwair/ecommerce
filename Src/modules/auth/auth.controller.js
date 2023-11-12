@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import cloudinary from '../../services/cloudinary.js';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from "../../services/email.js";
+import { customAlphabet } from 'nanoid';
 
 export const signup = async (req, res) => {
     const { userName, email, password, } = req.body;
@@ -15,9 +16,9 @@ export const signup = async (req, res) => {
         folder: `${process.env.APP_NAME}/users`
     });
     const token = jwt.sign({ email }, process.env.CONFIRMEMAIL_SECRET);
-    await sendEmail(email, "Confirm Email", `<a href='http://localhost:3000/auth/confirmEmail/${token}'>Verify</a>`);
+    await sendEmail(email, "Confirm Email", `To  Verify Your Email <a href='${req.protocol}://${req.headers.host}/auth/confirmEmail/${token}'>Click Here</a>`);
     const createUser = await userModel.create({ userName, email, password: hashedPassword, image: { secure_url, public_id } });
-    return res.status(201).json({ message: "success", createUser });
+    return res.status(201).json({ message: "success", createUser, token });
 }
 
 export const signin = async (req, res) => {
@@ -48,5 +49,40 @@ export const confirmEmail = async (req, res) => {
     if (!user) {
         return res.status(400).json({ message: "Invalid verify your email or your email is verified" });
     }
-    return res.status(200).json({ message: "Your Email is Verified" });
+    return res.redirect(process.env.LOGIN_FRONTEND);
+}
+
+
+export const sendCode = async (req, res) => {
+    const { email } = req.body;
+    let code = customAlphabet('1234567890abcdzABCDZ', 4);
+    code = code();
+    const user = await userModel.findOneAndUpdate({ email }, { sendCode: code }, { new: true });
+    if (!user) {
+        return res.status(409).json({ message: "email not found" });
+    }
+    const html = `<h2>Code is: ${code}</h2>`;
+    await sendEmail(email, 'Reset Password', html);
+    return res.redirect(process.env.FORGOT_PASSWORD);
+    // return res.status(200).json({ message: "success", user });
+}
+
+export const forgotPassword = async (req, res) => {
+    const { email, password, code } = req.body;
+    const user = await userModel.findOne({ email });
+    if (!user) {
+        return res.status(404).json({ message: "Not Register Account" });
+    }
+    if (user.sendCode != code) {
+        return res.status(400).json({ message: "Invalid Code" });
+    }
+    let match = await bcrypt.compare(password, user.password);
+    if (match) {
+        return res.status(409).json({ message: "Same Password" });
+    }
+    user.password = await bcrypt.hash(password, parseInt(process.env.SALTROUND));
+
+    user.sendCode = null;
+    await user.save();
+    return res.status(200).json({ message: "success" });
 }
