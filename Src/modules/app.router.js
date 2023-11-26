@@ -1,6 +1,6 @@
 import connectDB from '../../DB/connection.js';
 import categoriesRouter from './categories/categoies.router.js';
-import productsRouter from './products/product.router.js';
+import productsRouter from './products/products.router.js';
 import authRouter from './auth/auth.router.js';
 import subcategoryRouter from './subcategory/subcategory.router.js';
 import couponRouter from './coupon/coupon.router.js';

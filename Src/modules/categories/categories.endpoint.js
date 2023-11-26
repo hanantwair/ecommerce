@@ -1,9 +1,6 @@
-const roles = {
-    Admin: 'Admin',
-    User: 'User',
-}
+import { roles } from '../../middleware/auth.js'
 
-export const endpoint = {
+export const endPoint = {
     getAll: [roles.Admin],
     getActive: [roles.User],
     spesific: [roles.Admin, roles.User],
