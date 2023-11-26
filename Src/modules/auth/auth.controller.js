@@ -64,7 +64,6 @@ export const sendCode = async (req, res) => {
     const html = `<h2>Code is: ${code}</h2>`;
     await sendEmail(email, 'Reset Password', html);
     return res.redirect(process.env.FORGOT_PASSWORD);
-    // return res.status(200).json({ message: "success", user });
 }
 
 export const forgotPassword = async (req, res) => {
