@@ -4,6 +4,7 @@ import productsRouter from './products/products.router.js';
 import authRouter from './auth/auth.router.js';
 import subcategoryRouter from './subcategory/subcategory.router.js';
 import couponRouter from './coupon/coupon.router.js';
+import cartRouter from './cart/cart.router.js';
 
 const initApp = (app, express) => {
     app.use(express.json());
@@ -16,6 +17,7 @@ const initApp = (app, express) => {
     app.use('/auth', authRouter);
     app.use('/subcategory', subcategoryRouter);
     app.use('/coupon', couponRouter);
+    app.use('/cart', cartRouter);
     app.get("*", (req, res) => {
         return res.status(200).json({ message: "Page Not Found!!" });
     });
