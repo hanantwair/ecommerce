@@ -1,11 +1,14 @@
 import cartModel from '../../../DB/Model/Cart.model.js';
 
-export const getCart = async (req, res) => {
+export const getCart = async (req, res, next) => {
     const cart = await cartModel.findOne({ userId: req.user._id });
+    if (!cart) {
+        return next(new Error("Cart not Found", { cause: 404 }));
+    }
     return res.status(201).json({ message: "success", cart });
 }
 
-export const createCart = async (req, res) => {
+export const createCart = async (req, res, next) => {
     const { productId, quantity } = req.body;
     const cart = await cartModel.findOne({ userId: req.user._id });
     if (!cart) {
@@ -30,7 +33,7 @@ export const createCart = async (req, res) => {
     return res.status(201).json({ message: "success", cart });
 }
 
-export const removeItem = async (req, res) => {
+export const removeItem = async (req, res, next) => {
     const { productId } = req.body;
     await cartModel.updateOne({ userId: req.user._id }, {
         $pull: {
@@ -42,7 +45,7 @@ export const removeItem = async (req, res) => {
     return res.status(200).json({ message: "success" });
 }
 
-export const clearCart = async (req, res) => {
+export const clearCart = async (req, res, next) => {
     const clearCart = await cartModel.updateOne({ userId: req.user._id }, { products: [] });
     return res.status(200).json({ message: "success" });
 }

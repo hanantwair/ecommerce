@@ -5,19 +5,19 @@ import slugify from 'slugify';
 import cloudinary from '../../services/cloudinary.js';
 
 
-export const getProducts = (req, res) => {
+export const getProducts = (req, res, next) => {
     return res.json({ message: "products..." });
 }
 
-export const createProduct = async (req, res) => {
+export const createProduct = async (req, res, next) => {
     const { name, price, discount, categoryId, subCategoryId } = req.body;
     const checkCategory = await categoryModel.findById(categoryId);
     if (!checkCategory) {
-        return res.status(400).json({ message: "Category Not Found" });
+        return next(new Error("Category not Found", { cause: 404 }));
     }
     const checkSubCategory = await subcategoryModel.findById(subCategoryId);
     if (!checkSubCategory) {
-        return res.status(400).json({ message: "Sub Category Not Found" });
+        return next(new Error("Sub-Category not Found", { cause: 404 }));
     }
     req.body.slug = slugify(name);
     req.body.finalPrice = price - (price * (discount || 0) / 100);
@@ -38,7 +38,7 @@ export const createProduct = async (req, res) => {
 
     const product = await productModel.create(req.body);
     if (!product) {
-        return res.status(400).json({ message: "Error While Creating Product" });
+        return next(new Error("Error While Creating Product", { cause: 400 }));
     }
     product.save();
 

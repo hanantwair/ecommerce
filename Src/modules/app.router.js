@@ -5,8 +5,11 @@ import authRouter from './auth/auth.router.js';
 import subcategoryRouter from './subcategory/subcategory.router.js';
 import couponRouter from './coupon/coupon.router.js';
 import cartRouter from './cart/cart.router.js';
+import cors from 'cors';
+import { globalErrorHandler } from '../services/errorHandling.js';
 
 const initApp = (app, express) => {
+    app.use(cors());
     app.use(express.json());
     connectDB();
     app.get('/', (req, res) => {
@@ -19,8 +22,9 @@ const initApp = (app, express) => {
     app.use('/coupon', couponRouter);
     app.use('/cart', cartRouter);
     app.get("*", (req, res) => {
-        return res.status(200).json({ message: "Page Not Found!!" });
+        return res.status(500).json({ message: "Page Not Found!!" });
     });
+    app.use(globalErrorHandler);
 }
 
 export default initApp;
