@@ -20,4 +20,5 @@ export const sendCode = joi.object({
 export const forgotPassword = joi.object({
     email: generalFields.email.required(),
     password: generalFields.password.required(),
+    code: joi.string().length(4).required(),
 });

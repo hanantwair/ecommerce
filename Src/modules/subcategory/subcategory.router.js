@@ -8,7 +8,8 @@ import { validation } from '../../middleware/validation.js';
 import * as validators from './subcategory.validation.js';
 const router = Router({ mergeParams: true });
 
-router.post('/', auth(endPoint.create), fileUpload(fileValidation.image).single('image'),
+router.post('/', asyncHandler(auth(endPoint.create)), fileUpload(fileValidation.image).single('image'),
     validation(validators.createSubCategory), asyncHandler(subcategoryContoller.createSubCategory));
-router.get('/', asyncHandler(subcategoryContoller.getSubCategory));
+router.get('/', asyncHandler(auth(endPoint.get)), validation(validators.getSubCategory),
+    asyncHandler(subcategoryContoller.getSubCategory));
 export default router;

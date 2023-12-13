@@ -6,3 +6,7 @@ export const createSubCategory = joi.object({
     file: generalFields.file.required(),
     categoryId: generalFields.id.required(),
 });
+
+export const getSubCategory = joi.object({
+    categoryId: generalFields.id.required(),
+});

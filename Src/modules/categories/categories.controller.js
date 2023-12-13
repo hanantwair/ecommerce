@@ -42,7 +42,7 @@ export const updateCategory = async (req, res, next) => {
     }
     if (req.body.name) {
         if (await categoryModel.findOne({ name: req.body.name }).select('name')) {
-            return res.status(409).json({ message: `category ${req.body.name} alreqdy exists!` });
+            return next(new Error(`category ${req.body.name} alreqdy exists!`, { cause: 409 }));
         }
         category.name = req.body.name;
         category.slug = slugify(req.body.name);

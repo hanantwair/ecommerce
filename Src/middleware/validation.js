@@ -1,4 +1,5 @@
 import joi from 'joi';
+import { Types } from 'mongoose';
 
 export const validationObjectId = (value, helper) => {
     if (Types.ObjectId.isValid(value)) {
@@ -37,7 +38,10 @@ export const validation = (schema) => {
         }
         const validationResult = schema.validate(inputsData, { abortEarly: false });
         if (validationResult.error?.details) {
-            return res.status(400).json({ message: "validation error", validationError: validationResult.error.details });
+            return next(new Error({
+                message: "validation error",
+                validationError: validationResult.error.details
+            }, { cause: 400 }));
         }
         next();
     }

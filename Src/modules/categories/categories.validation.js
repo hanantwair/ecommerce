@@ -16,7 +16,3 @@ export const updateCategory = joi.object({
     name: joi.string().min(3).max(25),
     file: generalFields.file,
 });
-
-// export const subCategoryRouter = joi.object({
-//     id: generalFields.id.required(),
-// });

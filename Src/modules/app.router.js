@@ -22,7 +22,7 @@ const initApp = (app, express) => {
     app.use('/coupon', couponRouter);
     app.use('/cart', cartRouter);
     app.get("*", (req, res) => {
-        return res.status(500).json({ message: "Page Not Found!!" });
+        return next(new Error("Page Not Found!!", { cause: 500 }));
     });
     app.use(globalErrorHandler);
 }
